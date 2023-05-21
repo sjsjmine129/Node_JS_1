@@ -25,6 +25,7 @@ function templateHTML(title, list, body){
   <div class="grid-container">
     <div>
       ${list}
+      <a href="/create">create</a>
     </div>
     <div>
       ${body}
@@ -83,13 +84,27 @@ var app = http.createServer(function(request,response){
           response.end(template);
         });
       });
-      
     }
+  }
+  else if(pathname === '/create'){
+    fs.readdir('./data',function(err, filelist){
+      title = 'WEB - create';
+      var list = make_list(filelist);
+      var template = templateHTML(title, list, `
+      <form action="http://localhost:3000/process_create" method="post">
+      <!-- 위 주소로 아래의 데이터들 받아서 submit시 보냄    쿼리로 안보내고 숨겨서 전송 -->
+          <p></p><input type="text" name ="title" placeholder="title"></p>
+          <p>
+              <textarea name="description" placeholder="description"></textarea>
+          </p>
+          <p>
+              <input type="submit">
+          </p>
+      </form>`);
 
-      //웹페이지에 출력
-    //response.end(queryData.id);  // /? 뒷부분 웹페이지에 출력
-    // response.end(fs.readFileSync(__dirname + _url));
-
+      response.writeHead(200);
+      response.end(template);
+    });
   }
   else{
     response.writeHead(404);
